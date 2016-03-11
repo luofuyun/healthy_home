@@ -1,0 +1,14 @@
+@CHARSET "UTF-8";
+h1,h2 {
+	color: red;
+	font-size: 14px;
+}
+
+p {
+	color: rgb(255, 0, 0);
+	text-align: center;
+}
+
+.center {
+	text-align: center
+}

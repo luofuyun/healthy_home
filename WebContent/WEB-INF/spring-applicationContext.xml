@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	http://www.springframework.org/schema/mvc  
+	http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">  
+ 
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  
+		<property name="dataSource" ref="dataSource" />  
+		<property name="hibernateProperties">  
+			<props>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.provider_configuration_file_resource_path">ehcache.xml</prop>
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>  
+				<prop key="hibernate.hbm2ddl.auto">update</prop>  
+				<prop key="hibernate.show_sql">true</prop>  
+				<prop key="hibernate.format_sql">true</prop> 
+			</props>  
+		</property>  
+		<property name="annotatedClasses">  
+			<list>  
+				<value>healthyhome.bean.UserMessage</value>
+				<value>healthyhome.bean.UserRole</value>
+				<value>healthyhome.bean.Role</value>
+				<value>healthyhome.bean.RoleMenu</value>
+				<value>healthyhome.bean.Menu</value>
+				<value>healthyhome.bean.HealthKnowledge</value>
+				<value>healthyhome.bean.CarHug</value>
+				<value>healthyhome.bean.CarInfo</value>
+				<value>healthyhome.bean.Society</value>
+				<value>healthyhome.bean.HugCustomer</value>
+				<value>healthyhome.bean.healthy.HealthyAsk</value>
+				<value>healthyhome.bean.healthy.HealthyActivity</value>
+				<value>healthyhome.bean.healthy.HealthyActivityUser</value>
+				<value>healthyhome.bean.healthy.DayCheck</value>
+				<value>healthyhome.bean.message.Message</value>
+				<!--列出你所有需要自动添加到数据库中表的类-->
+			</list>
+		</property>  
+	</bean>
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<!-- service层方法涉及到增删改的 方法名称根据以下命名规范 -->
+		<tx:attributes>
+			<tx:method name="update*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+	
+    <aop:config>
+		<aop:pointcut id="pc"
+			expression="execution(* healthyhome.service.*.*(..))" />
+		<!--把事务控制在Service层 其中第一个*代表返回值,第二个*代表某个包下,第三*代表service下子包，第三个*代表方法名,“（..）”代表方法参数。 
+			注意第一个*后面要打一个空格,要不然会报表达式错误 -->
+		<aop:advisor pointcut-ref="pc" advice-ref="txAdvice" />
+	</aop:config>
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" >  
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>  
+        <property name="url" value="jdbc:mysql://localhost:3306/healthy_home?useUnicode=true&amp;characterEncoding=utf-8"></property><!--写上自己的mysql位置以及数据库的名字-->
+        <property name="username" value="root"></property><!--输入自己数据库的用户名-->
+        <property name="password" value="root"></property><!--输入自己数据库的密码-->
+    </bean>
+    
+</beans>
